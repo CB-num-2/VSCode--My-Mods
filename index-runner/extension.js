@@ -1,6 +1,6 @@
 // ============================================================================
 // SELF-CONTAINED WEB RUNNER EXTENSION (extension.js)
-// This code is completely web-safe and bypasses Node.js desktop limits.
+// Pure JavaScript and HTML environment optimized for vscode.dev
 // ============================================================================
 
 const vscode = require('vscode');
@@ -10,7 +10,7 @@ function activate(context) {
     const runButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     runButton.command = 'extension.runWebIndexFile';
     runButton.text = '$(play) Run Index';
-    runButton.tooltip = 'Click to find and execute index file in a side-by-side web panel';
+    runButton.tooltip = 'Click to execute index.html or index.js in a side-by-side web panel';
     runButton.color = '#ffffff';
     runButton.show();
 
@@ -29,8 +29,7 @@ function activate(context) {
             const rootUri = folders[0].uri;
             const targetFiles = [
                 { name: 'index.html', type: 'html' },
-                { name: 'index.js', type: 'js' },
-                { name: 'index.py', type: 'py' }
+                { name: 'index.js', type: 'js' }
             ];
 
             let foundFile = null;
@@ -51,7 +50,7 @@ function activate(context) {
             }
 
             if (!foundFile) {
-                vscode.window.showErrorMessage('No index.html, index.js, or index.py found in this folder.');
+                vscode.window.showErrorMessage('No index.html or index.js found in this folder.');
                 return;
             }
 
@@ -86,33 +85,6 @@ function activate(context) {
                             } catch (err) {
                                 outputElement.innerHTML += '<span style="color: #f48771;">' + err.message + '</span>';
                             }
-                        </script>
-                    </body>
-                    </html>
-                `;
-            } 
-            else if (foundFile.type === 'py') {
-                panel.webview.html = `
-                    <html>
-                    <body style="font-family: monospace; padding: 15px; background: #1e1e1e; color: #d4d4d4;">
-                        <h3 style="color: #4fc1ff; margin-top: 0;">Python WebAssembly Runtime:</h3>
-                        <pre id="python-output" style="white-space: pre-wrap; font-size: 13px; line-height: 1.5;">Initializing Pyodide WASM Core Environment...</pre>
-                        <script src="https://cdnjs.cloudflare.com/ajax/libs/pyodide/0.26.1/pyodide.js"></script>
-                        <script>
-                            async function runPythonScript() {
-                                const out = document.getElementById('python-output');
-                                try {
-                                    let pyodide = await loadPyodide();
-                                    out.textContent = "Pyodide Loaded successfully.\\n\\n--- Output ---\\n";
-                                    pyodide.setStdout({
-                                        batched: (text) => { out.textContent += text + '\\n'; }
-                                    });
-                                    await pyodide.runPythonAsync(\`${fileContent.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`);
-                                } catch (err) {
-                                    out.innerHTML += '<span style="color: #f48771;">\\n[Python Error]: ' + err.message + '</span>';
-                                }
-                            }
-                            runPythonScript();
                         </script>
                     </body>
                     </html>
