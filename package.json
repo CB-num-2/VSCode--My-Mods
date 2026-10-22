@@ -1,0 +1,23 @@
+{
+  "name": "browser-index-runner",
+  "displayName": "Browser Index Runner",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "browser": "./extension.js",
+  "extensionKind": [
+    "web"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.runWebIndexFile",
+        "title": "Run Web Index"
+      }
+    ]
+  }
+}
